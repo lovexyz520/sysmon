@@ -1,7 +1,41 @@
 """首頁 - 儀表板：顯示 IP / 位置 / ISP 摘要"""
 
+import ipaddress
 import streamlit as st
 from sysmon.core.ip_info import query_ip, get_public_ip
+
+
+def _get_client_ip() -> str:
+    """從 Streamlit request headers 取得客戶端真實公網 IP。
+    優先順序：CF-Connecting-IP（Cloudflare）→ X-Forwarded-For → X-Real-IP
+    過濾掉私有/迴環位址，避免傳入 ip-api.com 導致 private range 錯誤。
+    """
+    def is_public(ip: str) -> bool:
+        try:
+            addr = ipaddress.ip_address(ip)
+            return not (addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_unspecified)
+        except ValueError:
+            return False
+
+    try:
+        headers = st.context.headers
+        # Cloudflare 直接給真實 client IP
+        cf_ip = headers.get("CF-Connecting-IP", "").strip()
+        if cf_ip and is_public(cf_ip):
+            return cf_ip
+        # 標準代理 header，逐一檢查每個 IP
+        for candidate in headers.get("X-Forwarded-For", "").split(","):
+            candidate = candidate.strip()
+            if candidate and is_public(candidate):
+                return candidate
+        # nginx 代理 header
+        real_ip = headers.get("X-Real-IP", "").strip()
+        if real_ip and is_public(real_ip):
+            return real_ip
+    except Exception:
+        pass
+    return ""
+
 
 st.title("🏠 SysMon 儀表板")
 st.markdown("歡迎使用 SysMon 系統查詢工具，快速取得網路與系統資訊。")
@@ -29,17 +63,7 @@ st.divider()
 st.markdown("### 📍 您的網路資訊")
 
 with st.spinner("正在偵測公網 IP..."):
-    # 嘗試從 Streamlit header 讀取真實 IP
-    detected_ip = ""
-    try:
-        headers = st.context.headers
-        detected_ip = (
-            headers.get("X-Forwarded-For", "").split(",")[0].strip()
-            or headers.get("X-Real-IP", "").strip()
-        )
-    except Exception:
-        pass
-
+    detected_ip = _get_client_ip()
     ipinfo_token = st.session_state.get("ipinfo_token", "")
     data = query_ip(detected_ip, ipinfo_token)
 
