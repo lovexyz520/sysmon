@@ -98,9 +98,23 @@ UnicodeEncodeError: 'cp950' codec can't encode character '\U0001f5a5'
 各 `@app.command()` 的 docstring 裡的繁體中文沒問題。
 CLI 執行時需設 `PYTHONIOENCODING=utf-8`。
 
-### Streamlit `st.context.headers` 取 IP
-在 Streamlit Cloud 上，真實 IP 在 `X-Forwarded-For` header，
-備援方案是呼叫 `https://api.ipify.org`。
+### Streamlit Cloud 無法從伺服器端取得客戶端真實 IP
+Streamlit Cloud 的 `X-Forwarded-For` 只包含**內部私有 IP**（如 `192.168.x.x`、`10.x.x.x`），
+無法從伺服器端取得真實 client IP。
+
+**解法**：使用 `streamlit-javascript` 套件，讓**瀏覽器端**直接呼叫 `api.ipify.org`：
+```python
+from streamlit_javascript import st_javascript
+
+client_ip = st_javascript(
+    "await fetch('https://api.ipify.org?format=json')"
+    ".then(r => r.json()).then(d => d.ip).catch(() => '')"
+)
+# 第一次渲染回傳 0，JS 執行後自動 rerun 回傳實際 IP 字串
+if not isinstance(client_ip, str) or not client_ip:
+    st.stop()  # 等待 JS 執行完畢
+```
+此方案已在 `pages/1_home.py` 與 `pages/2_ip_info.py` 實作並驗證。
 
 ### `ssl_tools.py` 的 `not_valid_before_utc`
 使用 `cryptography` >= 42.x 時，應用 `.not_valid_before_utc`（timezone-aware）

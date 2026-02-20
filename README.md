@@ -234,6 +234,7 @@ sysmon/
 | 套件 | 用途 |
 |------|------|
 | `streamlit` | Web 介面框架 |
+| `streamlit-javascript` | 瀏覽器端 JS 執行（取得客戶端真實 IP）|
 | `typer` + `rich` | CLI 框架與美化輸出 |
 | `dnspython` | DNS 解析 |
 | `python-whois` + `ipwhois` | WHOIS 查詢 |
