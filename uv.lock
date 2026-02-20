@@ -1047,6 +1047,18 @@ wheels = [
 ]
 
 [[package]]
+name = "streamlit-javascript"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a5/69/723ebc7a58057b1e6f54d0c23c86488054d756e0e470daf4db703fe02a63/streamlit-javascript-0.1.5.tar.gz", hash = "sha256:9da5176522a0acf2c39d3b0bec9f856fdd8ea3c70bb1066841a546ab1348ae1d", size = 512374, upload-time = "2022-05-13T07:48:47.802Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/81/0c9e9e4d2dab97224efe105ba44f47b259f37d8e7673b94f5b5523fe2c8f/streamlit_javascript-0.1.5-py3-none-any.whl", hash = "sha256:36ca4d8c46fd5b6526d1a705530472e03cb6e5bb24694330649f21d5c436d280", size = 518387, upload-time = "2022-05-13T07:48:45.406Z" },
+]
+
+[[package]]
 name = "sysmon"
 version = "0.1.0"
 source = { editable = "." }
@@ -1063,6 +1075,7 @@ dependencies = [
     { name = "requests" },
     { name = "rich" },
     { name = "streamlit" },
+    { name = "streamlit-javascript" },
     { name = "typer" },
     { name = "user-agents" },
     { name = "validators" },
@@ -1082,6 +1095,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.0" },
     { name = "rich", specifier = ">=13.7.0" },
     { name = "streamlit", specifier = ">=1.41.0" },
+    { name = "streamlit-javascript", specifier = ">=0.1.5" },
     { name = "typer", specifier = ">=0.12.0" },
     { name = "user-agents", specifier = ">=2.2.0" },
     { name = "validators", specifier = ">=0.34.0" },
