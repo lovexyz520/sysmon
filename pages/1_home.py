@@ -67,6 +67,15 @@ with st.spinner("正在偵測公網 IP..."):
     ipinfo_token = st.session_state.get("ipinfo_token", "")
     data = query_ip(detected_ip, ipinfo_token)
 
+# ── 暫時 Debug（確認 headers 後可移除）─────────────────────────────────────────
+with st.expander("🛠️ Debug: Request Headers（確認後請移除）"):
+    try:
+        all_headers = dict(st.context.headers)
+        st.write(f"**偵測到的 IP**：`{detected_ip or '（未偵測到，使用 fallback）'}`")
+        st.json(all_headers)
+    except Exception as e:
+        st.write(f"無法讀取 headers：{e}")
+
 if "error" in data:
     st.error(f"無法取得 IP 資訊：{data['error']}")
 else:
